@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  # Local fallback database
+  database:
+    image: mongo:latest
+    container_name: job_tracker_db
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+    restart: unless-stopped
+
+  # Express Backend Service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: job_tracker_backend
+    ports:
+      - "5000:5000"
+    environment:
+      - PORT=5000
+      - MONGO_URI=mongodb://database:27017/job_tracker
+      - JWT_SECRET=docker_compose_developer_secret_key_123
+    depends_on:
+      - database
+    restart: unless-stopped
+
+  # Nginx Frontend Service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: job_tracker_frontend
+    ports:
+      - "3000:80"
+    environment:
+      - VITE_API_URL=http://localhost:5000/api
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  mongo_data:

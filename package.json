@@ -1,0 +1,16 @@
+{
+  "name": "job-tracker-root",
+  "version": "1.0.0",
+  "description": "Root helper for CareerFlow Job Application Tracker",
+  "scripts": {
+    "install-all": "npm.cmd install --prefix backend && npm.cmd install --prefix frontend",
+    "dev-backend": "npm.cmd run dev --prefix backend",
+    "dev-frontend": "npm.cmd run dev --prefix frontend",
+    "test-backend": "npm.cmd run test --prefix backend",
+    "dev": "concurrently \"npm.cmd run dev --prefix backend\" \"npm.cmd run dev --prefix frontend\"",
+    "seed-backend": "npm.cmd run seed --prefix backend"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}

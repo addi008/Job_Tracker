@@ -1,0 +1,41 @@
+services:
+  # 1. Express Backend Web Service
+  - type: web
+    name: careerflow-api
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true  # Render will automatically generate a secure key
+      - key: MONGO_URI
+        sync: false          # Prompts the user to enter their MongoDB Atlas connection string in Render dashboard
+
+  # 2. React Frontend Static Site
+  - type: web
+    name: careerflow-ui
+    env: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishDir: dist
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+    # Single Page Application (SPA) rewrites for React Router routing support
+    routes:
+      - type: rewrite
+        src: /*
+        dest: /index.html
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: careerflow-api
+          property: url
+        value: ${value}/api
